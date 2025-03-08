@@ -1,0 +1,50 @@
+\c projects
+
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    password VARCHAR(50) NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE posts (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    content TEXT NOT NULL,
+    category VARCHAR(150) NOT NULL,
+    viewed INTEGER DEFAULT 0,
+    userId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE categories (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    is_active BOOLEAN DEFAULT FALSE,
+    userId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE comments (
+    id BIGSERIAL PRIMARY KEY,
+    content VARCHAR(500) NOT NULL,
+    userId BIGINT NOT NULL,
+    postId BIGINT NOT NULL,
+    parent_id BIGINT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_parent_comment FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+);
+
+CREATE TABLE favorite_post (  
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    postId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+);
