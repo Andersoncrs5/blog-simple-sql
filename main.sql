@@ -1,5 +1,3 @@
-\c projects
-
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -47,4 +45,41 @@ CREATE TABLE favorite_post (
     createdAt TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE followers (
+    id BIGSERIAL PRIMARY KEY,
+    followerId BIGINT NOT NULL,
+    followedId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_follower FOREIGN KEY (followerId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_followed FOREIGN KEY (followedId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE notifications (
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE post_likes (
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    postId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE comment_likes (
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    commentId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comment FOREIGN KEY (commentId) REFERENCES comments(id) ON DELETE CASCADE
 );
