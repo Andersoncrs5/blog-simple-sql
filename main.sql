@@ -74,7 +74,6 @@ CREATE TABLE post_likes (
     CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE comment_likes (
     id BIGSERIAL PRIMARY KEY,
     userId BIGINT NOT NULL,
@@ -82,4 +81,37 @@ CREATE TABLE comment_likes (
     createdAt TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_comment FOREIGN KEY (commentId) REFERENCES comments(id) ON DELETE CASCADE
+);
+
+-- Tabela recover_email
+CREATE TABLE recover_email (
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expiresAt TIMESTAMP NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Tabela reports
+CREATE TABLE reports (
+    id BIGSERIAL PRIMARY KEY,
+    reporterId BIGINT NOT NULL,
+    targetType VARCHAR(50) NOT NULL,  -- 'post', 'comment', 'user'
+    targetId BIGINT NOT NULL,
+    reason TEXT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_reporter FOREIGN KEY (reporterId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Tabela messages
+CREATE TABLE messages (
+    id BIGSERIAL PRIMARY KEY,
+    senderId BIGINT NOT NULL,
+    receiverId BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_sender FOREIGN KEY (senderId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_receiver FOREIGN KEY (receiverId) REFERENCES users(id) ON DELETE CASCADE
 );
