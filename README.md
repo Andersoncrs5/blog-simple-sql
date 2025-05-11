@@ -6,4 +6,6 @@ This project is a simple blog system designed to manage users, posts, categories
 
 Database: projects
 
-This schema includes the following tables:
+# alert
+
+This project will only serve as a basis for other projects. 
