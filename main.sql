@@ -3,6 +3,8 @@ CREATE TABLE users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password VARCHAR(50) NOT NULL,
+    bio TEXT,
+    avatar_url TEXT,
     createdAt TIMESTAMP DEFAULT NOW()
 );
 
@@ -114,4 +116,52 @@ CREATE TABLE messages (
     createdAt TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_sender FOREIGN KEY (senderId) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_receiver FOREIGN KEY (receiverId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE post_metrics (
+    postId BIGINT PRIMARY KEY,
+    likes INTEGER DEFAULT 0,
+    shares INTEGER DEFAULT 0,
+    comments INTEGER DEFAULT 0,
+    favorites INTEGER DEFAULT 0,
+    updatedAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE attachments (
+    id BIGSERIAL PRIMARY KEY,
+    url TEXT NOT NULL,
+    type VARCHAR(50), -- image, video, document, etc.
+    postId BIGINT,
+    commentId BIGINT,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comment FOREIGN KEY (commentId) REFERENCES comments(id) ON DELETE CASCADE
+);
+
+CREATE TABLE user_settings (
+    userId BIGINT PRIMARY KEY,
+    language VARCHAR(10) DEFAULT 'pt-BR',
+    dark_mode BOOLEAN DEFAULT FALSE,
+    notify_email BOOLEAN DEFAULT TRUE,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE user_feedback (
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    subject VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE user_blocks (
+    id BIGSERIAL PRIMARY KEY,
+    blockerId BIGINT NOT NULL,
+    blockedId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_blocker FOREIGN KEY (blockerId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_blocked FOREIGN KEY (blockedId) REFERENCES users(id) ON DELETE CASCADE
 );
