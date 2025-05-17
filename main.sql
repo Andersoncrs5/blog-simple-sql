@@ -7,6 +7,28 @@ CREATE TABLE users (
     avatar_url TEXT,
     createdAt TIMESTAMP DEFAULT NOW()
 );
+ 
+create TABLE user_metrics (
+	id BIGINT primary key,
+	followers_count INTEGER default 0,
+	following_count INTEGER default 0,
+	posts_count INTEGER default 0,
+	comments_count INTEGER default 0,
+	likes_given_count INTEGER default 0,
+	deslikes_given_count INTEGER default 0,
+	shares_count INTEGER default 0,
+	reports_received_count INTEGER default 0,
+	reputation_score NUMERIC(3,2) default 0.0,
+	mediaUploads_count INTEGER default 0,
+	savedPosts_count INTEGER default 0,
+	savedComments_count INTEGER default 0,
+	savedMedia_count INTEGER default 0,
+	createdAt TIMESTAMP DEFAULT NOW(),
+	updatedAt TIMESTAMP DEFAULT NOW(),
+	last_login TIMESTAMP DEFAULT NOW(),
+	userId BIGINT NOT NULL,
+	CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
 
 CREATE TABLE posts (
     id BIGSERIAL PRIMARY KEY,
@@ -49,6 +71,15 @@ CREATE TABLE favorite_post (
     CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
 );
 
+CREATE TABLE favorite_comment (  
+    id BIGSERIAL PRIMARY KEY,
+    userId BIGINT NOT NULL,
+    commentId BIGINT NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comment FOREIGN KEY (commentId) REFERENCES comments(id) ON DELETE CASCADE
+);
+
 CREATE TABLE followers (
     id BIGSERIAL PRIMARY KEY,
     followerId BIGINT NOT NULL,
@@ -85,7 +116,6 @@ CREATE TABLE comment_likes (
     CONSTRAINT fk_comment FOREIGN KEY (commentId) REFERENCES comments(id) ON DELETE CASCADE
 );
 
--- Tabela recover_email
 CREATE TABLE recover_email (
     id BIGSERIAL PRIMARY KEY,
     userId BIGINT NOT NULL,
@@ -95,7 +125,6 @@ CREATE TABLE recover_email (
     CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabela reports
 CREATE TABLE reports (
     id BIGSERIAL PRIMARY KEY,
     reporterId BIGINT NOT NULL,
@@ -106,7 +135,6 @@ CREATE TABLE reports (
     CONSTRAINT fk_reporter FOREIGN KEY (reporterId) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabela messages
 CREATE TABLE messages (
     id BIGSERIAL PRIMARY KEY,
     senderId BIGINT NOT NULL,
@@ -121,11 +149,30 @@ CREATE TABLE messages (
 CREATE TABLE post_metrics (
     postId BIGINT PRIMARY KEY,
     likes INTEGER DEFAULT 0,
+    dislikes INTEGER DEFAULT 0,
     shares INTEGER DEFAULT 0,
+    bookmarks INTEGER DEFAULT 0,
     comments INTEGER DEFAULT 0,
+    reportCount INTEGER DEFAULT 0,
+    editedTimes INTEGER DEFAULT 0,
+    engagementScore NUMERIC(3,2) default 0.0,
     favorites INTEGER DEFAULT 0,
     updatedAt TIMESTAMP DEFAULT NOW(),
+    lastInteractionAt TIMESTAMP null,
     CONSTRAINT fk_post FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment_metrics (
+	id BIGINT PRIMARY KEY,
+	likes INTEGER DEFAULT 0,
+	dislikes INTEGER DEFAULT 0,
+	reportCount INTEGER DEFAULT 0,
+	editedTimes INTEGER DEFAULT 0,
+	engagementScore NUMERIC(3,2) default 0.0,
+	lastInteractionAt TIMESTAMP null,
+	favoritesCount INTEGER DEFAULT 0,
+	commentId BIGINT NOT NULL,
+	CONSTRAINT fk_comment FOREIGN KEY (commentId) REFERENCES comments(id) ON DELETE CASCADE
 );
 
 CREATE TABLE attachments (
